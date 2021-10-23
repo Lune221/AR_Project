@@ -49,7 +49,7 @@ while runLoop && frameCount < 400
     cameraFeatures = extractFeatures(cameraFrameGray, cameraPts);
     idxPairs = matchFeatures(cameraFeatures, referenceFeatures);
     idxPairsSize = size(idxPairs(:, 2), 1);
-    
+
     if idxPairsSize > MATCHING_POINTS_NUMBER
         % Store the SURF points that were matched
         matchedCameraPts = cameraPts(idxPairs(:,1));
@@ -90,10 +90,10 @@ while runLoop && frameCount < 400
 
             step(videoPlayer, outputFrame);
         catch ME
-            warning("An error has ocurred");
+            %warning("An error has ocurred");
         end
     else
-        warning("Can't see the reference image in the camera frame");
+        %warning("Can't see the reference image in the camera frame");
         step(videoPlayer, cameraFrame);
     end
 
