@@ -13,11 +13,13 @@ referenceFeatures = extractFeatures(referenceImageGray, referencePts);
 
 %% Initialise replacement video
 
-video = vision.VideoFileReader('Jamono.mp4', 'VideoOutputDataType', 'uint8');
-% Skip the first fex black frames
-for k = 1:30
-    step(video);
-end
+%% Initialise replacement image
+
+image = imread('me.png');
+imageContour = getImageContour(image);
+bw = sum(imageContour,3) > 700;        % a binary image to overlay
+mask = cast(bw, class(imageContour));  % ensure the types are compatible
+imageContour = imageContour .* repmat(mask, [1 1 3]);  % apply the mask
 
 %% Prepare video input from webcam
 
@@ -60,7 +62,7 @@ while runLoop && frameCount < 400
             %% Rescale Replacement Video frame
 
             % Load replacement video frame
-            videoFrame = step(video);
+            videoFrame = imageContour;
 
             % Get replacement and reference dimensions
             repDims = size(videoFrame(:, :, 1));
@@ -97,5 +99,4 @@ while runLoop && frameCount < 400
 
     runloop = isOpen(videoPlayer);
 end
-release(video)
 delete(camera)

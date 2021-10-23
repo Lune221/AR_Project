@@ -3,7 +3,7 @@ MATCHING_POINTS_NUMBER = 7;
 
 %% Load Refrences image, detect SURF points and extract descriptors
 
-referenceImage = imread("reference.jpeg");
+referenceImage = imread("couverture.jpeg");
 
 %% Detect and extract SURF features
 referenceImageGray = rgb2gray(referenceImage);
@@ -97,6 +97,9 @@ while runLoop && frameCount < 400
            step(videoPlayer, outputFrame);
         end
         
+    elseif fix == true
+        outputFrame = step(alphaBlender, cameraFrame, imageContourTransformed, mask);
+        step(videoPlayer, outputFrame);
     else
         warning("Can't see the reference image in the camera frame");
         step(videoPlayer, cameraFrame);

@@ -1,6 +1,6 @@
 %% Load Refrences image, detect SURF points and extract descriptors
 
-referenceImage = imread("reference.jpeg");
+referenceImage = imread("carnet.jpeg");
 
 %% Detect and extract SURF features
 referenceImageGray = rgb2gray(referenceImage);
@@ -14,14 +14,13 @@ figure;
 imshow(referenceImage), hold on;
 plot(referencePts.selectStrongest(50));
 
-%% Initialise replacement video
+%% Initialise replacement image
 
-video = vision.VideoFileReader('Jamono.mp4', 'VideoOutputDataType', 'uint8');
-
-% Skip the first fex black frames
-for k = 1:30
-    step(video);
-end
+image = imread('me.png');
+imageContour = getImageContour(image);
+bw = sum(imageContour,3) > 700;        % a binary image to overlay
+mask = cast(bw, class(imageContour));  % ensure the types are compatible
+imageContour = imageContour .* repmat(mask, [1 1 3]);  % apply the mask
 
 %% Prepare video input from webcam
 
@@ -59,10 +58,10 @@ showMatchedFeatures(cameraFrame, referenceImage, matchedCameraPts, matchedRefere
 figure(1)
 showMatchedFeatures(cameraFrame, referenceImage, inlierCameraPts, inlierReferencePts, 'Montage');
 
-%% Rescale Replacement Video frame
+%% Rescale Replacement imageContour frame
 
-% Load replacement video frame
-videoFrame = step(video);
+% Load replacement imageContour frame
+videoFrame = imageContour;
 
 % Get replacement and reference dimensions
 repDims = size(videoFrame(:, :, 1));
@@ -142,7 +141,6 @@ trackingTransform.T = referenceTransform.T * trackingTransform.T;
 
 %% Rescale new replacement video frame
 
-repframe = step(video);
 outputView = imref2d(size(referenceImage));
 videoFrameScaled = imwarp(videoFrame, scaleTransform, 'OutputView', outputView);
 
@@ -167,5 +165,4 @@ figure(1)
 imshow(outputFrame);
 
 %% Clean all
-release(video);
-delete(camera);
+clearvars
